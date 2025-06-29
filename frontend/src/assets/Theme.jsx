@@ -51,7 +51,7 @@ const ThemeToggle = () => {
       onMouseDown={startDrag}
       style={{
         position: "fixed",
-        top: "20px", // Initial position
+        top: "70px", // Initial position
         right: "90px", // Initial position beside the notes button
         zIndex: 1000,
         backgroundColor: theme === "light" ? "#f0f0f0" : "#333",

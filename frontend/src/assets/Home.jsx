@@ -47,6 +47,7 @@ function Home() {
       {/* HERO SECTION */}
       <main className="hero">
         <div className="hero-content">
+          <h1>FinIQ</h1>
           <h1>Free and open</h1>
           <h2>Stock market and financial education</h2>
           <p>
