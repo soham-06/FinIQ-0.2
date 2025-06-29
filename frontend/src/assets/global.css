@@ -1,0 +1,17 @@
+/* Default light theme */
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --button-bg-color: #f0f0f0;
+  --button-text-color: #000;
+  --button-hover-bg-color: #e0e0e0;
+}
+
+/* Dark theme */
+body.dark-mode {
+  --background-color: #000000;
+  --text-color: #ffffff;
+  --button-bg-color: #333333;
+  --button-text-color: #fff;
+  --button-hover-bg-color: #555555;
+}

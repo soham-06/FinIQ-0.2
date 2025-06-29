@@ -22,7 +22,7 @@ const FloatingNotes = () => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [token]);
 
   const fetchNotes = async () => {
     try {
@@ -31,7 +31,13 @@ const FloatingNotes = () => {
       });
       setSavedNotes(res.data || []);
     } catch (err) {
-      console.error("Error fetching notes:", err);
+      if (err.response && err.response.status === 401) {
+        setError("Session expired. Please log in again.");
+        localStorage.removeItem("token");
+      } else {
+        console.error("Error fetching notes:", err);
+        setError("Failed to fetch notes. Try again later.");
+      }
     }
   };
 
@@ -53,8 +59,13 @@ const FloatingNotes = () => {
       fetchNotes();
       setError("");
     } catch (err) {
-      console.error("Error saving note:", err);
-      setError("Failed to save note. Try logging in again.");
+      if (err.response && err.response.status === 401) {
+        setError("Session expired. Please log in again.");
+        localStorage.removeItem("token");
+      } else {
+        setError("Failed to save note. Try again later.");
+        console.error("Error saving note:", err);
+      }
     }
   };
 
@@ -104,7 +115,9 @@ const FloatingNotes = () => {
     const header = popupRef.current?.querySelector(".popup-header");
     if (!header) return;
 
-    let offsetX = 0, offsetY = 0, isDragging = false;
+    let offsetX = 0,
+      offsetY = 0,
+      isDragging = false;
 
     const onMouseDown = (e) => {
       isDragging = true;
@@ -131,6 +144,10 @@ const FloatingNotes = () => {
     return () => header.removeEventListener("mousedown", onMouseDown);
   }, [visible]);
 
+  const handleNoteClick = (content) => {
+    setNote(content);
+  };
+
   return (
     <>
       <div
@@ -154,15 +171,21 @@ const FloatingNotes = () => {
             onKeyDown={handleKeyDown}
             placeholder="Write your note here..."
           />
-          <button className="save-btn" onClick={saveNote}>Save & Close</button>
+          <button className="save-btn" onClick={saveNote}>
+            Save & Close
+          </button>
           <div className="notes-list">
             {savedNotes.length > 0 && (
               <ul>
                 {savedNotes.map((n) => (
                   <li key={n._id}>
                     <span
-                      onClick={() => setNote(n.content)}
-                      style={{ cursor: "pointer", marginRight: "8px", display: "inline-block" }}
+                      onClick={() => handleNoteClick(n.content)}
+                      style={{
+                        cursor: "pointer",
+                        marginRight: "8px",
+                        display: "inline-block",
+                      }}
                     >
                       • {n.content}
                     </span>

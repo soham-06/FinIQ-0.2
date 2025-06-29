@@ -3,14 +3,15 @@
   width: 100vw;
   height: 100vh;
   font-family: 'Segoe UI', sans-serif;
-  color: white;
+  color: var(--text-color);
   margin: 0;
   overflow: hidden;
+  background-color: var(--background-color);
 }
 
 .leftPanel {
   width: 40%;
-  background-color: #111133;
+  background-color: var(--button-bg-color);
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -71,15 +72,15 @@
   border-radius: 8px;
   border: none;
   font-size: 16px;
-  background: #222255;
-  color: white;
+  background: var(--button-bg-color);
+  color: var(--text-color);
   outline: none;
 }
 
 .button {
   padding: 12px;
-  background-color: #ff007f;
-  color: white;
+  background-color: #ff007f; /* Keeps this specific color for branding */
+  color: var(--button-text-color);
   font-weight: bold;
   font-size: 16px;
   border: none;
@@ -93,29 +94,32 @@
   justify-content: space-between;
   font-size: 14px;
   margin-top: 10px;
+  color: var(--text-color);
 }
 
 .link {
   text-decoration: underline;
   cursor: pointer;
-  color: #aaa;
+  color: var(--button-hover-bg-color);
 }
 
 .logo {
   font-size: 18px;
   margin-bottom: 40px;
   font-weight: bold;
+  color: var(--text-color);
 }
 
 .toggleText {
   text-align: center;
   margin-top: 20px;
   font-size: 14px;
+  color: var(--text-color);
 }
 
 .toggleButton {
   background: none;
-  color: #5dcefa;
+  color: var(--button-hover-bg-color);
   border: none;
   cursor: pointer;
   font-weight: bold;
@@ -126,27 +130,28 @@
   font-size: 48px;
   font-weight: bold;
   margin-bottom: 20px;
+  color: var(--text-color);
 }
 
 .description {
   max-width: 400px;
   font-size: 18px;
   line-height: 1.5;
-  color: #ddd;
+  color: var(--text-color);
 }
 
 .success {
   margin-top: 20px;
   padding: 12px;
   border-radius: 6px;
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #d4edda; /* Default success color */
+  color: #155724; /* Default text for success */
 }
 
 .error {
   margin-top: 20px;
   padding: 12px;
   border-radius: 6px;
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #f8d7da; /* Default error background */
+  color: #721c24; /* Default error text */
 }
