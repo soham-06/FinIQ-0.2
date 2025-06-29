@@ -26,6 +26,7 @@
 
 /* Notes Popup */
 .notes-popup {
+
   position: fixed;
   top: 160px; /* Below the notes button */
   right: 20px;

@@ -72,12 +72,22 @@ function Home() {
       </main>
 
       {/* FOOTER */}
-      <footer className="footer">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Email:
-          example@example.com
-        </p>
-      </footer>
+<footer className="footer">
+  <p>
+    &copy; 2025 FinIQ. All rights reserved. | Contributors: 
+    <a href="https://github.com/soham-06" target="_blank" rel="noopener noreferrer">
+      soham-06(Soham)
+    </a>,  
+    <a href="https://github.com/Infinity915" target="_blank" rel="noopener noreferrer">
+      Infinity915(Taksh)
+    </a>,  
+    <a href="https://github.com/Deepak-Sharma-2006" target="_blank" rel="noopener noreferrer">
+      Deepak-Sharma-2006(Deepak)
+    </a>
+  </p>
+</footer>
+
+
     </div>
   );
 }
