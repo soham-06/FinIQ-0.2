@@ -9,6 +9,9 @@ import Modules from "./assets/Modules";
 import Topics from "./assets/Topics";
 import TopicDetailsWrapper from "./assets/TopicDetailsWrapper";
 import FloatingNotes from "./assets/FloatingNotes";
+import ThemeToggle from "./assets/Theme"; // Import the ThemeToggle component
+import './assets/global.css'; // Import global styles
+
 
 const clientId = "452988976233-v5cck196uoeii6abjlmsi5mto4r6asf9.apps.googleusercontent.com";
 
@@ -17,7 +20,6 @@ function ProtectedRoute({ children }) {
   return user ? children : <Navigate to="/login" />;
 }
 
-// ✅ Wrapper to access location and conditionally render FloatingNotes
 function AppWrapper() {
   const location = useLocation();
   const hideFloatingNotes = location.pathname === "/login"; // You can add more paths if needed
@@ -25,6 +27,7 @@ function AppWrapper() {
   return (
     <>
       {!hideFloatingNotes && <FloatingNotes />}
+      <ThemeToggle /> {/* Theme toggle button */}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
