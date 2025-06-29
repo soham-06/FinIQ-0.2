@@ -29,7 +29,7 @@ function Login() {
     setError('');
     try {
       const res = await axios.post('http://localhost:2100/api/auth/login', loginData);
-      login(res.data.user); // ✅ Store user in auth context
+      login(res.data.user, res.data.token); // Pass token to context
       navigate('/home');    // ✅ Redirect to home
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -43,6 +43,7 @@ function Login() {
     try {
       const res = await axios.post('http://localhost:2100/api/auth/register', registerData);
       setMessage(res.data.message);
+      login(res.data.user, res.data.token); // Pass token to context
       setIsLogin(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -54,7 +55,7 @@ function Login() {
       const res = await axios.post('http://localhost:2100/api/auth/google-login', {
         token: credentialResponse.credential
       });
-      login(res.data.user); // ✅ Save user in context
+      login(res.data.user, res.data.token); // Pass token to context
       navigate('/home');    // ✅ Redirect
     } catch (err) {
       setError(err.response?.data?.message || 'Google login failed');

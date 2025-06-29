@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CommentSection from "./CommentSection";
+import Swal from "sweetalert2";
 import "./TopicDetails.css";
 
 const TopicDetails = () => {
@@ -15,7 +16,7 @@ const TopicDetails = () => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(null);
 
-  const userEmail = JSON.parse(localStorage.getItem('user'))?.email || 'guest@example.com';
+  const userEmail = JSON.parse(localStorage.getItem("user"))?.email || "guest@example.com";
 
   const numericLevel = parseInt(levelId.replace(/[^0-9]/g, ""));
   const topicNumber = parseInt(topicId.split("-")[2], 10);
@@ -66,7 +67,7 @@ const TopicDetails = () => {
   }, [levelId, topicId, navigate]);
 
   const formatContent = (text) => {
-    return text.split('\n').map((line, index) => (
+    return text.split("\n").map((line, index) => (
       <span key={index}>
         {line}
         <br />
@@ -75,9 +76,33 @@ const TopicDetails = () => {
   };
 
   const handleSubmit = async () => {
-    let total = topic.quiz.length;
-    let correct = 0;
+    const totalQuestions = topic.quiz.length;
+    const answered = Object.keys(selectedAnswers).length;
+    const unansweredCount = totalQuestions - answered;
 
+    if (answered === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "No Answers Selected",
+        text: "Please answer at least one question before submitting.",
+      });
+      return;
+    }
+
+    if (unansweredCount > 0) {
+      const result = await Swal.fire({
+        title: "Some Questions Unanswered",
+        text: `You have left ${unansweredCount} question(s) unanswered. Do you still want to submit?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Submit Anyway",
+        cancelButtonText: "No, Go Back",
+      });
+
+      if (!result.isConfirmed) return;
+    }
+
+    let correct = 0;
     topic.quiz.forEach((q, idx) => {
       const selected = selectedAnswers[idx];
       const selectedText = q.options[selected];
@@ -87,20 +112,26 @@ const TopicDetails = () => {
     setScore(correct);
     setSubmitted(true);
 
+    Swal.fire({
+      title: "Quiz Submitted!",
+      text: `You scored ${correct} out of ${totalQuestions}.`,
+      icon: "success",
+    });
+
     try {
-      await axios.post('http://localhost:2100/api/quiz-scores/submit', {
+      await axios.post("http://localhost:2100/api/quiz-scores/submit", {
         userEmail,
         levelId: numericLevel,
         topicId: topic.customId,
         score: correct,
-        total,
+        total: totalQuestions,
       });
     } catch (err) {
       if (err.response?.status === 409) {
-        alert("❌ You have already submitted this quiz.");
+        Swal.fire("⚠️ Duplicate", "You have already submitted this quiz.", "info");
       } else {
-        console.error("Error submitting quiz score", err);
-        alert("Something went wrong while submitting your quiz.");
+        console.error("Quiz submission error", err);
+        Swal.fire("Error", "There was an error submitting your quiz.", "error");
       }
     }
   };
@@ -114,74 +145,38 @@ const TopicDetails = () => {
       <div className="topic-header">
         <div className="series-title">{topic.seriesTitle || topic.title}</div>
         <h1>{topic.title || topic.topic}</h1>
-        <Link to={`/topics/level-${numericLevel}`} className="back-link">← Back to Topics</Link>
+        <Link to={`/topics/level-${numericLevel}`} className="back-link">
+          ← Back to Topics
+        </Link>
       </div>
 
       <div className="topic-content">
         {topic.image && (
-          <div className="topic-image" style={{ margin: '20px 0', textAlign: 'center' }}>
+          <div className="topic-image" style={{ margin: "20px 0", textAlign: "center" }}>
             <img
               src={topic.image}
               alt={topic.title || topic.topic}
               style={{
-                maxWidth: '100%',
+                maxWidth: "100%",
                 maxHeight: 300,
                 borderRadius: 12,
-                boxShadow: '0 2px 12px rgba(25, 118, 210, 0.10)'
+                boxShadow: "0 2px 12px rgba(25, 118, 210, 0.10)",
               }}
             />
           </div>
         )}
 
-        <div className="topic-main-content">
-          {formatContent(topic.content || "")}
-        </div>
-
-        {topic.additionalImages?.length > 0 && (
-          <div className="additional-images">
-            <h3>Additional Resources</h3>
-            <div className="image-grid">
-              {topic.additionalImages.map((img, idx) => (
-                <img key={idx} src={img} alt={`Additional resource ${idx + 1}`} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {topic.videoLinks?.filter(v => v && !v.includes("video_url")).length > 0 && (
-          <div className="video-section">
-            <h3>Video Resources</h3>
-            <div className="video-grid">
-              {topic.videoLinks
-                .filter(v => v && !v.includes("video_url"))
-                .map((video, idx) => {
-                  const match = video.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
-                  const videoId = match ? match[1] : null;
-
-                  return (
-                    <div key={idx} className="video-container">
-                      {videoId ? (
-                        <iframe
-                          src={`https://www.youtube.com/embed/${videoId}`}
-                          title={`YouTube video ${idx + 1}`}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        ></iframe>
-                      ) : (
-                        <a href={video} target="_blank" rel="noopener noreferrer">View Video {idx + 1}</a>
-                      )}
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        )}
+        <div className="topic-main-content">{formatContent(topic.content || "")}</div>
 
         {topic.quiz?.length > 0 && (
           <div className="topic-quiz">
             <h2>Prove Yourself</h2>
             {topic.quiz.map((q, idx) => (
-              <div key={idx} className="quiz-question">
+              <div
+                key={idx}
+                className={`quiz-question ${submitted && selectedAnswers[idx] === undefined ? "unanswered-highlight" : ""
+                  }`}
+              >
                 <h4>Question {idx + 1}</h4>
                 <p>{q.question}</p>
                 <div className="quiz-options">
@@ -189,16 +184,16 @@ const TopicDetails = () => {
                     const isSelected = selectedAnswers[idx] === i;
                     const isCorrect = q.correctAnswer === opt;
 
-                    let optionClass = '';
-                    let symbol = '';
+                    let optionClass = "";
+                    let symbol = "";
 
                     if (submitted) {
                       if (isCorrect) {
-                        optionClass = 'correct';
-                        symbol = '✔';
+                        optionClass = "correct";
+                        symbol = "✔";
                       } else if (isSelected) {
-                        optionClass = 'wrong';
-                        symbol = '❌';
+                        optionClass = "wrong";
+                        symbol = "❌";
                       }
                     }
 
@@ -207,13 +202,13 @@ const TopicDetails = () => {
                         key={i}
                         className={`quiz-option ${optionClass}`}
                         style={{
-                          pointerEvents: submitted ? 'none' : 'auto',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
+                          pointerEvents: submitted ? "none" : "auto",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           <input
                             type="radio"
                             name={`question-${idx}`}

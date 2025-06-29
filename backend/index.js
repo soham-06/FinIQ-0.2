@@ -13,6 +13,7 @@ import moduleRoutes from './routes/moduleRoute.js';
 import quizScoreRoutes from './routes/QuizscoreRoute.js';
 import commentRoutes from './routes/comments.js'; // ✅ NEW
 import noteRoutes from './routes/noteRoute.js';
+import userRoutes from './routes/userRoute.js'; // <-- Import userRoutes
 
 import { errorHandler } from './middlewares/errorMiddleware.js';
 import './config/passportConfig.js';
@@ -45,6 +46,7 @@ app.use('/api/levels', moduleRoutes);
 app.use('/api/quiz-scores', quizScoreRoutes);
 app.use('/api/comments', commentRoutes); // ✅ MOUNT COMMENT ROUTES
 app.use('/api/notes', noteRoutes);
+app.use('/api/users', userRoutes); // <-- Add this line to mount user routes
 
 // ✅ ROOT ROUTE
 app.get('/', (req, res) => {

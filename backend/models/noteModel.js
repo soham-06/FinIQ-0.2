@@ -4,13 +4,16 @@ const noteSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    unique: true
+    required: true
   },
   content: {
     type: String,
     required: true,
     default: ''
+  },
+  parentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
   }
 }, { timestamps: true });
 
